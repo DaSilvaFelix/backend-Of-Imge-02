@@ -3,10 +3,7 @@ import { DB_URL } from "../config/config.js";
 
 export const conexion = async () => {
   try {
-    await mongoose.connect(DB_URL,{
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-    })
+    await mongoose.connect(DB_URL,)
     console.log('dataBase coneccting');
     
   } catch (error) {
@@ -14,3 +11,4 @@ export const conexion = async () => {
     
   }
 };
+export default conexion

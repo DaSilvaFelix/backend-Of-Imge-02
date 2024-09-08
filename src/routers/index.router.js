@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { saludo } from "../controllers/controller.js";
-const router = Router();
+const index_ruta = Router();
 
-router.get('/',saludo)
-export default router
+index_ruta.get('/',saludo)
+export default index_ruta
