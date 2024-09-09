@@ -11,3 +11,8 @@ export const uploadImage = async (filesPhat) => {
     folder: "primerCrudImage",
   });
 };
+
+
+export const deleteImage = async (publicId)=>{
+  await cloudinary.uploader.destroy(publicId)
+}

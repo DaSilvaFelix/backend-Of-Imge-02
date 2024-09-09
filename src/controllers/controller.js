@@ -1,5 +1,5 @@
 import product from "../models/products.model.js";
-import { uploadImage } from "../cloudinary.js";
+import { deleteImage, uploadImage } from "../cloudinary.js";
 import fs from "fs-extra";
 
 export const saludo = (req, res) => res.status(200).send("<h1>Hola Mundo</h1>");
@@ -23,6 +23,8 @@ export const createProduct = async (req, res) => {
     });
     if (req.files?.Image) {
       const result = await uploadImage(req.files.Image.tempFilePath);
+      console.log(result);
+
       newProduct.Image = {
         public_id: result.public_id,
         secure_url: result.secure_url,
@@ -54,10 +56,12 @@ export const deletProduct = async (req, res) => {
   try {
     const { id } = req.params;
     const products = await product.findByIdAndDelete(id);
-    !products &&
-      res
-        .status(404)
-        .json({ massaje: "no se encontro el producto a eliminar " });
+    if (!products) {
+      res.status(404).json({ massaje: "no se encontro el producto a eliminar " });
+    }
+    if (products.Image?.public_id) {
+      await deleteImage(products.Image.public_id);
+    }
     res.json({ messaje: "producto eliminado " });
   } catch (error) {
     console.log(error);
