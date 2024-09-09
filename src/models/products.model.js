@@ -15,6 +15,10 @@ const productModel = mongoose.Schema(
       type: Number,
       default: 0,
     },
+    Image: {
+      public_id: String,
+      secure_url: String,
+    },
   },
   {
     timestamps: true,

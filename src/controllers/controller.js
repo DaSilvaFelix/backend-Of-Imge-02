@@ -1,4 +1,6 @@
 import product from "../models/products.model.js";
+import { uploadImage } from "../cloudinary.js";
+import fs from "fs-extra";
 
 export const saludo = (req, res) => res.status(200).send("<h1>Hola Mundo</h1>");
 
@@ -12,16 +14,25 @@ export const getProduct = async (req, res) => {
 };
 
 export const createProduct = async (req, res) => {
-  const { name, description, price } = req.body;
   try {
+    const { name, description, price } = req.body;
     const newProduct = await new product({
       name,
       description,
       price,
     });
+    if (req.files?.Image) {
+      const result = await uploadImage(req.files.Image.tempFilePath);
+      newProduct.Image = {
+        public_id: result.public_id,
+        secure_url: result.secure_url,
+      };
+      await fs.unlink(req.files.Image.tempFilePath);
+    }
     await newProduct.save();
     res.status(200).json({
       messaje: "poducto creado con exito",
+      newProduct,
     });
   } catch (error) {
     console.log(error);
@@ -54,7 +65,20 @@ export const deletProduct = async (req, res) => {
 };
 
 export const updateProduct = async (req, res) => {
-  const { id } = req.params;
-  const updatedProducts = product.findByIdAndUpdate(id, req.body);
-  res.json(updatedProducts);
+  try {
+    const { id } = req.params;
+    const searchProduct = await product.findById(id);
+    if (!searchProduct) {
+      return res
+        .status(404)
+        .json({ messaje: "no hay producto para actualizar" });
+    } else {
+      const updateproducts = await product.findByIdAndUpdate(id, req.body, {
+        new: true,
+      });
+      res.json({ messaje: "producto actualizado con exito", updateproducts });
+    }
+  } catch (error) {
+    console.log(error);
+  }
 };

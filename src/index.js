@@ -4,12 +4,19 @@ import morgan from "morgan";
 import conexion from "./db/database.js";
 import index_ruta from "./routers/index.router.js";
 import ruta_product from "./routers/products.router.js";
+import fileUpload from "express-fileupload";
 
 const app = express();
 app.use(cors());
 app.use(morgan("dev"));
 conexion();
 app.use(express.json());
+app.use(
+  fileUpload({
+    useTempFiles: true,
+    tempFileDir: "./uploads",
+  })
+);
 app.use(index_ruta);
 app.use(ruta_product);
 app.listen(4000, () => {
